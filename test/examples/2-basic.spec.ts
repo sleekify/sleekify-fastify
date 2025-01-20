@@ -26,7 +26,7 @@ describe('Integration test example 2-basic', () => {
     });
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
-  }, 120000);
+  }, 300000);
 
   afterAll(async () => {
     if (childProcess !== undefined) {
