@@ -1,12 +1,11 @@
 {
   "name": "@sleekify/sleekify-fastify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A TypeScript decorator driven approach for developing Fastify web applications.",
   "scripts": {
     "build": "tsc",
     "lint": "eslint --ext .ts .",
-    "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
-    "test:windows": "node --experimental-vm-modules ./node_modules/.bin/jest.cmd",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "validate": "npm run build && npm run lint -- --fix && npm test"
   },
   "repository": {
