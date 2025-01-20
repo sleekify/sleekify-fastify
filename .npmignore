@@ -1,0 +1,17 @@
+.circleci
+.vscode
+coverage
+dist/test/
+examples/
+node_modules/
+resources/
+src/
+test/
+.eslintignore
+.eslintrc.json
+.gitignore
+.npmignore
+.nvmrc
+.jest.config.js
+package-lock.json
+tsconfig.json

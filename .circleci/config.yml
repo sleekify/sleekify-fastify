@@ -1,0 +1,91 @@
+version: 2.1
+orbs:
+  node: circleci/node@5
+  win: circleci/windows@5.0
+jobs:
+  Build Linux:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Transpile TypeScript
+          command: npm run build
+      - run:
+          name: Lint
+          command: npm run lint
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - node_modules
+            - dist
+  Test Linux:
+    executor: node/default
+    environment:
+      JEST_JUNIT_OUTPUT_DIR: ./test-results/
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: npm install jest-junit
+      - run:
+          name: Run tests
+          command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
+      - store_test_results:
+          path: ./test-results/
+  Build Windows:
+    executor: 
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: NVM Install
+          command: nvm install
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Transpile TypeScript
+          command: npm run build
+      - run:
+          name: Lint
+          command: npm run lint
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - node_modules
+            - dist
+  Test Windows:
+    executor: win/default
+    environment:
+      JEST_JUNIT_OUTPUT_DIR: ./test-results/
+    steps:
+      - checkout
+      - run:
+          name: NVM Install
+          command: nvm install
+      - attach_workspace:
+          at: .
+      - run:
+          command: npm install jest-junit
+      - run:
+          name: Run tests
+          command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
+      - store_test_results:
+          path: ./test-results/
+workflows:
+  Validate Code (Linux):
+    jobs:
+      - Build Linux
+      - Test Linux:
+          requires: 
+            - Build Linux
+  Validate Code (Windows):
+    jobs:
+      - Build Windows
+      - Test Windows:
+          requires: 
+            - Build Windows
+    

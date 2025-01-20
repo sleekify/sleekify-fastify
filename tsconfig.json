@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "display": "Node 18",
+
+  "_version": "18.2.0",
+
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "target": "es2022",
+
+    "allowJs": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "strict": true
+  },
+
+  "exclude": ["examples"],
+  "include": ["src/**/*", "test/**/*", "test/data/basic/v1", "test/data/basic/AbstractCollectionResource.ts", "test/data/basic/AbstractSingleResource.ts", "test/data/basic/openapi.ts"]
+}

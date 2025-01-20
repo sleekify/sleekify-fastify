@@ -1,0 +1,32 @@
+{
+    "env": {
+        "browser": true,
+        "es2022": true
+    },
+    "extends": "standard-with-typescript",
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/semi": ["error", "always"],
+        "complexity": ["error", 10],
+        "no-extraneous-class": "off",
+        "max-lines-per-function": ["error", 50],
+        "semi": [2, "always"]
+    },
+    "overrides": [
+        {
+            "files": ["*.spec.ts", "*Spec.ts", "test/**/*.ts"],
+            "rules": {
+                "@typescript-eslint/explicit-function-return-type": "off",
+                "complexity": "off",
+                "max-lines-per-function": "off",
+                "no-new": "off"
+            }
+        }
+    ]
+}

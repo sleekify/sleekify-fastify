@@ -1,0 +1,21 @@
+{
+    "env": {
+        "browser": true,
+        "es2022": true
+    },
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/semi": ["error", "always"],
+        "complexity": ["error", 10],
+        "no-extraneous-class": "off",
+        "max-lines-per-function": ["error", 50],
+        "semi": [2, "always"]
+    }
+}
