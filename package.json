@@ -6,6 +6,7 @@
     "build": "tsc",
     "lint": "eslint --ext .ts .",
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
+    "test:windows": "node --experimental-vm-modules ./node_modules/.bin/jest.cmd",
     "validate": "npm run build && npm run lint -- --fix && npm test"
   },
   "repository": {
