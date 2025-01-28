@@ -1,4 +1,11 @@
-import { Components, DELETE, GET, Path, Schema } from '@sleekify/sleekify';
+import { Components, DELETE, GET, Path, PUT, Schema } from '@sleekify/sleekify';
+
+class OrdersIdBaseResource {
+  @PUT()
+  updateOne () {
+    return 'putV1OrdersId';
+  }
+}
 
 @Components({
   schemas: {
@@ -34,7 +41,7 @@ export class OrdersResource {
     }
   ]
 })
-export class OrdersIdResource {
+export class OrdersIdResource extends OrdersIdBaseResource {
   // Test async method
   @GET()
   @Schema({
