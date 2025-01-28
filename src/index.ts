@@ -1,6 +1,6 @@
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
-import { Annotation, Components, type ComponentsObject, Consumes, DELETE, GET, HEAD, type MediaTypeObject, type OpenAPIObject, type OperationObject, OPTIONS, PATCH, Path, type PathItemObject, POST, Produces, PUT, type ReferenceObject, type RequestBodyObject, type ResponseObject, Schema, TRACE } from '@sleekify/sleekify';
+import { Annotation, Components, type ComponentsObject, Consumes, DELETE, GET, HEAD, type MediaTypeObject, type OpenAPIObject, type OperationObject, OPTIONS, PATCH, Path, type PathItemObject, POST, Produces, PUT, type ReferenceObject, type RequestBodyObject, type ResponseObject, Schema, type ServerObject, type TagObject, TRACE } from '@sleekify/sleekify';
 import { dynamicImport } from 'tsimportlib';
 import _ from 'lodash';
 
@@ -118,6 +118,16 @@ export class Sleekify {
       for (const key of components) {
         this.sortObject(result, `components.${key}`);
       }
+
+      this.sortOperationObjects(result);
+
+      if (result.servers !== undefined) {
+        result.servers.sort((a: ServerObject, b: ServerObject) => a.url.localeCompare(b.url));
+      }
+
+      if (result.tags !== undefined) {
+        result.tags.sort((a: TagObject, b: TagObject) => a.name.localeCompare(b.name));
+      }
     }
 
     return result;
@@ -154,8 +164,6 @@ export class Sleekify {
         this.addServiceHandlers(clazz, classInstance, pathItemObject);
       }
     }
-
-    // TODO - sort specification?
   }
 
   private addComponents (clazz: new (...args: any[]) => any, componentsObject: ComponentsObject): void {
@@ -294,8 +302,15 @@ export class Sleekify {
   private addServiceHandlers (clazz: new (...args: any[]) => any, classInstance: Record<string, any>, pathItemObject: PathItemObject): void {
     const path = (pathItemObject as any).path;
     const operationMap: Record<string, OperationObject> = {};
+    const propertyNameMap: Record<string, null> = {};
 
-    for (const propertyName of Object.getOwnPropertyNames(Object.getPrototypeOf(classInstance))) {
+    for (let prototype = Object.getPrototypeOf(classInstance); prototype !== Object.prototype; prototype = Object.getPrototypeOf(prototype)) {
+      for (const propertyName of Object.getOwnPropertyNames(prototype)) {
+        propertyNameMap[propertyName] = null;
+      }
+    }
+
+    for (const propertyName in propertyNameMap) {
       const propertyValue = classInstance[propertyName];
       if (['constructor', 'function'].includes(propertyName) || !_.isFunction(propertyValue)) {
         continue;
@@ -373,5 +388,26 @@ export class Sleekify {
     }
 
     _.set(root, path, result);
+  }
+
+  private sortOperationObjects (result: any): void {
+    if (result.paths !== undefined) {
+      for (const path in result.paths) {
+        const pathItemObject: PathItemObject = result.paths[path];
+
+        for (const methodMap of methodMapArray) {
+          const operationObject = pathItemObject[methodMap.key];
+
+          if (operationObject !== undefined) {
+            this.sortObject(operationObject, 'callbacks');
+            this.sortObject(operationObject, 'responses');
+
+            if (operationObject.tags !== undefined) {
+              operationObject.tags.sort();
+            }
+          }
+        }
+      }
+    }
   }
 }

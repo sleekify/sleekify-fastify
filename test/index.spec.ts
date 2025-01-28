@@ -148,6 +148,9 @@ describe('sleekify', () => {
               }
             }
           },
+          put: {
+            operationId: 'putV1OrdersId'
+          },
           parameters: [
             {
               $ref: '#/components/parameters/id'
@@ -355,9 +358,41 @@ describe('sleekify', () => {
           version: '1.0.0'
         },
         paths: {
-          '/users': {},
+          '/users': {
+            get: {
+              callbacks: {
+                callback2: {},
+                callback1: {}
+              },
+              responses: {
+                201: {
+                  description: '201'
+                },
+                200: {
+                  description: '200'
+                }
+              },
+              tags: ['tag2', 'tag1']
+            }
+          },
           '/products': {}
         },
+        servers: [
+          {
+            url: '/url2'
+          },
+          {
+            url: '/url1'
+          }
+        ],
+        tags: [
+          {
+            name: 'tag2'
+          },
+          {
+            name: 'tag1'
+          }
+        ],
         webhooks: {
           webhook2: {},
           webhook1: {}
@@ -424,6 +459,11 @@ describe('sleekify', () => {
 
       // Then
       expect(Object.keys(result.paths ?? {})).toStrictEqual(['/products', '/users']);
+      expect(Object.keys(result.paths?.['/users']?.get?.callbacks ?? {})).toStrictEqual(['callback1', 'callback2']);
+      expect(Object.keys(result.paths?.['/users']?.get?.responses ?? {})).toStrictEqual(['200', '201']);
+      expect(result.paths?.['/users']?.get?.tags).toStrictEqual(['tag1', 'tag2']);
+      expect(result.servers?.map(v => v.url)).toStrictEqual(['/url1', '/url2']);
+      expect(result.tags?.map(v => v.name)).toStrictEqual(['tag1', 'tag2']);
       expect(Object.keys(result.webhooks ?? {})).toStrictEqual(['webhook1', 'webhook2']);
       expect(Object.keys(result.components ?? {})).toStrictEqual([
         'callbacks',
@@ -490,6 +530,7 @@ describe('sleekify', () => {
         'postV1Products',
         'postV1Users',
         'postV1UsersIdOrders',
+        'putV1OrdersId',
         'putV1ProductsId',
         'putV1UsersId'
       ]);
