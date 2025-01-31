@@ -1,7 +1,21 @@
 import { Components, DELETE, GET, Path, PUT, Schema } from '@sleekify/sleekify';
 
 class OrdersIdBaseResource {
-  @PUT()
+  // Test inheritance with no request body or response
+  @PUT({
+    requestBody: {
+      content: {}
+    },
+    responses: {
+      200: {
+        description: 'Empty response',
+        content: {}
+      }
+    }
+  })
+  @Schema({
+    $ref: '#/components/schemas/order'
+  })
   updateOne () {
     return 'putV1OrdersId';
   }

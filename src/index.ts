@@ -218,13 +218,6 @@ export class Sleekify {
 
   private addRequestBody (operationObject: OperationObject, resolvedConsumes: string[], resolvedSchema: any): void {
     if (operationObject.requestBody === undefined) {
-      operationObject.requestBody = {};
-    }
-
-    const referenceObject = operationObject.requestBody as ReferenceObject;
-    const requestBody: Exclude<RequestBodyObject, ReferenceObject> = operationObject.requestBody;
-
-    if (referenceObject.$ref === undefined && requestBody.content === undefined) {
       operationObject.requestBody = {
         content: resolvedConsumes.reduce((content: Record<string, MediaTypeObject>, mediaType) => {
           content[mediaType] = {
@@ -233,6 +226,12 @@ export class Sleekify {
           return content;
         }, {})
       };
+    }
+
+    const requestBody: Partial<Exclude<RequestBodyObject, ReferenceObject>> = operationObject.requestBody;
+
+    if (_.isEmpty(requestBody) || (requestBody.content !== undefined && _.isEmpty(requestBody.content) && Object.keys(requestBody).length === 1)) {
+      delete operationObject.requestBody;
     }
   }
 
@@ -260,16 +259,22 @@ export class Sleekify {
       } else {
         const referenceOrResponse: any = operationObject.responses[resolvedStatusCode];
 
-        if (referenceOrResponse.$ref === undefined && referenceOrResponse.content === undefined) {
-          const responseObject = operationObject.responses[resolvedStatusCode] as Exclude<ResponseObject, ReferenceObject>;
+        if (referenceOrResponse.$ref === undefined) {
+          if (referenceOrResponse.content === undefined) {
+            const responseObject = operationObject.responses[resolvedStatusCode] as Exclude<ResponseObject, ReferenceObject>;
 
-          /* add content to an existing response object */
-          responseObject.content = resolvedProduces.reduce((content: Record<string, MediaTypeObject>, mediaType) => {
-            content[mediaType] = {
-              schema: resolvedSchema
-            };
-            return content;
-          }, {});
+            /* add content to an existing response object */
+            responseObject.content = resolvedProduces.reduce((content: Record<string, MediaTypeObject>, mediaType) => {
+              content[mediaType] = {
+                schema: resolvedSchema
+              };
+              return content;
+            }, {});
+          }
+
+          if (_.isEmpty(referenceOrResponse.content)) {
+            delete referenceOrResponse.content;
+          }
         }
       }
     }

@@ -149,7 +149,12 @@ describe('sleekify', () => {
             }
           },
           put: {
-            operationId: 'putV1OrdersId'
+            operationId: 'putV1OrdersId',
+            responses: {
+              200: {
+                description: 'Empty response'
+              }
+            }
           },
           parameters: [
             {
@@ -421,8 +426,12 @@ describe('sleekify', () => {
             }
           },
           requestBodies: {
-            requestBody2: {},
-            requestBody1: {}
+            requestBody2: {
+              content: {}
+            },
+            requestBody1: {
+              content: {}
+            }
           },
           pathItems: {
             pathItem2: {},
@@ -431,11 +440,13 @@ describe('sleekify', () => {
           parameters: {
             parameter2: {
               name: 'parameter2',
-              in: 'query'
+              in: 'query',
+              content: {}
             },
             parameter1: {
               name: 'parameter1',
-              in: 'query'
+              in: 'query',
+              content: {}
             }
           },
           links: {
