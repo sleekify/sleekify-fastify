@@ -1,6 +1,6 @@
 {
   "name": "@sleekify/sleekify-fastify",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "A TypeScript decorator driven approach for developing Fastify web applications.",
   "scripts": {
     "build": "tsc",
