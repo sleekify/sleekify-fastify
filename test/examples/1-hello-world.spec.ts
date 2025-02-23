@@ -10,7 +10,7 @@ describe('Integration test example 1-hello-world', () => {
   beforeAll(async () => {
     const examplePath = `examples${path.sep}1-hello-world`;
 
-    execSyncWithOutput(`cd ${examplePath} && npm install`);
+    execSyncWithOutput(`cd ${examplePath} && npm ci --prefer-offline`);
     execSyncWithOutput(`cd ${examplePath} && npm run build`);
     execSyncWithOutput(`cd ${examplePath} && npm run lint -- --fix`);
 

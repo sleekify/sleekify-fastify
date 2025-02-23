@@ -10,7 +10,7 @@ describe('Integration test example 2-basic', () => {
   beforeAll(async () => {
     const examplePath = `examples${path.sep}2-basic`;
 
-    execSyncWithOutput(`cd ${examplePath} && npm install`);
+    execSyncWithOutput(`cd ${examplePath} && npm ci --prefer-offline`);
     execSyncWithOutput(`cd ${examplePath} && npm run build`);
     execSyncWithOutput(`cd ${examplePath} && npm run lint -- --fix`);
 
