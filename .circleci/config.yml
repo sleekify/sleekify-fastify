@@ -3,6 +3,76 @@ orbs:
   node: circleci/node@5
   win: circleci/windows@5.0
 jobs:
+  Check Version:
+    executor: node/default
+    steps:
+      - checkout
+      - run:
+          name: Get current version
+          command: |
+            MAIN_VERSION=$(curl https://raw.githubusercontent.com/sleekify/$CIRCLE_PROJECT_REPONAME/refs/heads/main/package.json | jq -r '.version')
+            MAIN_MAJOR=$(echo $MAIN_VERSION | sed 's/\([0-9]\+\)[.][0-9]\+[.][0-9]\+/\1/g')
+            MAIN_MINOR=$(echo $MAIN_VERSION | sed 's/[0-9]\+[.]\([0-9]\+\)[.][0-9]\+/\1/g')
+            MAIN_PATCH=$(echo $MAIN_VERSION | sed 's/[0-9]\+[.][0-9]\+[.]\([0-9]\+\)/\1/g')
+            test "$MAIN_VERSION" != ""
+            test "$MAIN_MAJOR" != ""
+            test "$MAIN_MINOR" != ""
+            test "$MAIN_PATCH" != ""
+            echo export MAIN_VERSION=$MAIN_VERSION >> $BASH_ENV
+            echo export MAIN_MAJOR=$MAIN_MAJOR >> $BASH_ENV
+            echo export MAIN_MINOR=$MAIN_MINOR >> $BASH_ENV
+            echo export MAIN_PATCH=$MAIN_PATCH >> $BASH_ENV
+      - run:
+          name: Get package version
+          command: |
+            PACKAGE_VERSION=$(jq -r '.version' package.json)
+            PACKAGE_LOCK_VERSION_1=$(jq -r '.version' package-lock.json)
+            PACKAGE_LOCK_VERSION_2=$(jq -r '.packages."".version' package-lock.json)
+            test "$PACKAGE_VERSION" != ""
+            test "$PACKAGE_LOCK_VERSION_1" != ""
+            test "$PACKAGE_LOCK_VERSION_2" != ""
+            echo export PACKAGE_VERSION=$PACKAGE_VERSION >> $BASH_ENV
+            echo export PACKAGE_LOCK_VERSION_1=$PACKAGE_LOCK_VERSION_1 >> $BASH_ENV
+            echo export PACKAGE_LOCK_VERSION_2=$PACKAGE_LOCK_VERSION_2 >> $BASH_ENV 
+      - run:
+          name: Verify branch name starts with issue ID
+          command: |
+            ISSUE_ID=$(echo $CIRCLE_BRANCH | sed 's/\([0-9]\+\).*/\1/g')
+            test "$ISSUE_ID" != ""
+            echo export ISSUE_ID=$ISSUE_ID >> $BASH_ENV
+      - run:
+          name: Get issue type
+          command: |
+            ISSUE_TYPE=$(curl https://api.github.com/repos/sleekify/$CIRCLE_PROJECT_REPONAME/issues/$ISSUE_ID/labels | jq -r '.[0].name')
+            test "$ISSUE_TYPE" == "enhancement" || test "$ISSUE_TYPE" == "bug"
+            echo export ISSUE_TYPE=$ISSUE_TYPE >> $BASH_ENV
+      - run:
+          name: Get expected version
+          command: |
+            EXPECTED_MINOR=$(if [[ $ISSUE_TYPE == enhancement ]]; then echo $((MAIN_MINOR+1)); else echo $MAIN_MINOR; fi)
+            EXPECTED_PATCH=$(if [[ $ISSUE_TYPE == bug ]]; then echo $((MAIN_PATCH+1)); else echo 0; fi)
+            EXPECTED_VERSION=$MAIN_MAJOR.$EXPECTED_MINOR.$EXPECTED_PATCH
+            echo export EXPECTED_VERSION=$EXPECTED_VERSION >> $BASH_ENV
+      - run:
+          name: Print versions
+          command: |
+            echo ISSUE_ID: $ISSUE_ID
+            echo ISSUE_TYPE: $ISSUE_TYPE
+            echo MAIN_VERSION: $MAIN_VERSION
+            echo EXPECTED_VERSION: $EXPECTED_VERSION
+            echo PACKAGE_VERSION: $PACKAGE_VERSION
+            echo PACKAGE_LOCK_VERSION_1: $PACKAGE_LOCK_VERSION_1
+            echo PACKAGE_LOCK_VERSION_2: $PACKAGE_LOCK_VERSION_2
+      - run:
+          name: Verify package.json version is correct
+          command: test "$PACKAGE_VERSION" == "$EXPECTED_VERSION"
+      - run:
+          name: Verify package-lock.json versions are correct
+          command: test "$PACKAGE_LOCK_VERSION_1" == "$EXPECTED_VERSION" && test "$PACKAGE_LOCK_VERSION_2" == "$EXPECTED_VERSION"
+      - run:
+          name: Test NPM publish
+          command: |
+            npm publish --access public --dry-run   
   Build Linux:
     executor: node/default
     steps:
@@ -42,7 +112,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: NVM Install
+          name: NVM install
           command: nvm install
       - node/install-packages:
           pkg-manager: npm
@@ -64,7 +134,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: NVM Install
+          name: NVM install
           command: nvm install
       - attach_workspace:
           at: .
@@ -75,17 +145,61 @@ jobs:
           command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
       - store_test_results:
           path: ./test-results/
+  Publish:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Transpile TypeScript
+          command: npm run build
+      - run:
+          name: Get package version
+          command: |
+            PACKAGE_VERSION=$(jq -r '.version' package.json)
+            test "$PACKAGE_VERSION" != ""
+            echo export PACKAGE_VERSION=$PACKAGE_VERSION >> $BASH_ENV
+      - run:
+          name: NPM publish
+          command: |
+            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            npm publish --access public
+      - run:
+          name: Tag release
+          command: |
+            git tag "v$PACKAGE_VERSION"
+            git push origin --tags
 workflows:
+  Check Version:
+    when:
+      not: 
+        equal: [ << pipeline.git.branch >>, main ]
+    jobs:
+      - Check Version
+  Publish:
+    when:
+      equal: [ << pipeline.git.branch >>, main ]
+    jobs:
+      - Publish:
+          context:
+            - GITHUB
+            - NPM
   Validate Code (Linux):
+    when:
+      not: 
+        equal: [ << pipeline.git.branch >>, main ]
     jobs:
       - Build Linux
       - Test Linux:
           requires: 
             - Build Linux
   Validate Code (Windows):
+    when:
+      not: 
+        equal: [ << pipeline.git.branch >>, main ]
     jobs:
       - Build Windows
       - Test Windows:
           requires: 
             - Build Windows
-    
