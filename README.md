@@ -7,6 +7,12 @@ This allows you to maintain your API documentation alongside your code using typ
 If you ever had to maintain a large OpenAPI specification by hand, this should grab your attention.
 Your API documentation will both match the OpenAPI specification's schema and be generated from your code.
 
+## Versions
+
+| Sleekify | Fastify | Node.js | OpenAPI Specification |
+| -------- | ------- | ------- | --------------------- |
+| 1.0.0+   | 5.0.0+  | 20      | 3.1.1                 |
+
 ## Getting Started
 
 1. First, install Sleekify and the Fastify integration
