@@ -1,4 +1,4 @@
-# <img src="resources/sleekify.png" height="27"> Sleekify Fastify Integration
+# <img src="https://github.com/sleekify/assets/blob/main/resources/sleekify.png" height="27"> Sleekify Fastify Integration
 
 This project's goal is to simplify the development of REST web services in NodeJS by bringing the best of the Java API for RESTful Web Services (JAX-RS) to TypeScript.
 This is possible since TypeScript decorators may be used in a manner similar to Java annotations.
