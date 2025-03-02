@@ -44,7 +44,7 @@ jobs:
           name: Get issue type
           command: |
             ISSUE_TYPE=$(curl https://api.github.com/repos/sleekify/$CIRCLE_PROJECT_REPONAME/issues/$ISSUE_ID/labels | jq -r '.[0].name')
-            test "$ISSUE_TYPE" == "bug" || test "$ISSUE_TYPE" == "documentation" || test "$ISSUE_TYPE" == "enhancement"
+            test "$ISSUE_TYPE" == "bug" || test "$ISSUE_TYPE" == "documentation" || test "$ISSUE_TYPE" == "enhancement" || test "$ISSUE_TYPE" == "maintenance"
             echo export ISSUE_TYPE=$ISSUE_TYPE >> $BASH_ENV
       - run:
           name: Get expected version
