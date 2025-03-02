@@ -8,7 +8,7 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md) and it should be fol
 
 ## Submitting an Issue
 
-Please pick from one of the provided templates (bug, documentation, or enhancement) and submit your issue.
+Please pick from one of the provided templates (bug, documentation, enhancement, or maintenance) and submit your issue.
 
 ## Submitting a Pull Request
 
