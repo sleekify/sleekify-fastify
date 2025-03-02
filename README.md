@@ -1,4 +1,4 @@
-# <img src="resources/sleekify.png" height="27"> Sleekify Fastify Integration
+# <img src="https://github.com/sleekify/assets/blob/main/resources/sleekify.png" height="27"> Sleekify Fastify Integration
 
 This project's goal is to simplify the development of REST web services in NodeJS by bringing the best of the Java API for RESTful Web Services (JAX-RS) to TypeScript.
 This is possible since TypeScript decorators may be used in a manner similar to Java annotations.
@@ -6,6 +6,12 @@ This project allows you to apply decorators to your resource classes to identify
 This allows you to maintain your API documentation alongside your code using typed definitions.
 If you ever had to maintain a large OpenAPI specification by hand, this should grab your attention.
 Your API documentation will both match the OpenAPI specification's schema and be generated from your code.
+
+## Versions
+
+| Sleekify | Fastify | Node.js | OpenAPI Specification |
+| -------- | ------- | ------- | --------------------- |
+| 1.0.0+   | 5.0.0+  | 20      | 3.1.1                 |
 
 ## Getting Started
 
