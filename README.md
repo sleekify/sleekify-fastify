@@ -24,6 +24,21 @@ Your API documentation will both match the OpenAPI specification's schema and be
 2. Create REST resources using the provided decorators
    <br/><sub>_src/v1/users.ts_</sub>
    ```TypeScript
+   import { type FastifyReply, type FastifyRequest } from 'fastify';
+
+   @Path('/v1/users')
+   export class UsersResource {
+     @POST()
+     async createOne (request: FastifyRequest, reply: FastifyReply) {
+       // TODO: your create user code here
+     }
+
+     @GET()
+     async getMany (request: FastifyRequest, reply: FastifyReply) {
+       // TODO: your query users code here
+     }
+   }
+
    @Path({
      path: '/v1/users/{id}',
      parameters: [
@@ -37,17 +52,17 @@ Your API documentation will both match the OpenAPI specification's schema and be
    })
    export class UsersIdResource {
      @GET()
-     async getOne () {
+     async getOne (request: FastifyRequest, reply: FastifyReply) {
        // TODO: your read user code here
      }
    
      @PUT()
-     async updateOne () {
+     async updateOne (request: FastifyRequest, reply: FastifyReply) {
        // TODO: your update user code here
      }
    
      @DELETE()
-     async deleteOne () {
+     async deleteOne (request: FastifyRequest, reply: FastifyReply) {
        // TODO: your delete user code here
      }
    }
