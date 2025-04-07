@@ -44,8 +44,8 @@ export class ProductsResource extends AbstractCollectionResource {
   @Schema({
     $ref: '#/components/schemas/product'
   })
-  async createOne (reply: FastifyRequest, request: FastifyReply) {
-    return await super.createOne(reply, request);
+  async createOne (request: FastifyRequest, reply: FastifyReply) {
+    return await super.createOne(request, reply);
   }
 
   @GET()
@@ -55,8 +55,8 @@ export class ProductsResource extends AbstractCollectionResource {
       $ref: '#/components/schemas/product'
     }
   })
-  async getMany (reply: FastifyRequest, request: FastifyReply) {
-    return await super.getMany(reply, request);
+  async getMany (request: FastifyRequest, reply: FastifyReply) {
+    return await super.getMany(request, reply);
   }
 }
 
@@ -77,17 +77,17 @@ export class ProductsIdResource extends AbstractSingleResource {
   }
 
   @GET()
-  async getOne (reply: SingleRequest, request: FastifyReply) {
-    return await super.getOne(reply, request);
+  async getOne (request: SingleRequest, reply: FastifyReply) {
+    return await super.getOne(request, reply);
   }
 
   @PUT()
-  async updateOne (reply: SingleRequest, request: FastifyReply) {
-    return await super.updateOne(reply, request);
+  async updateOne (request: SingleRequest, reply: FastifyReply) {
+    return await super.updateOne(request, reply);
   }
 
   @DELETE()
-  async deleteOne (reply: SingleRequest, request: FastifyReply) {
-    await super.deleteOne(reply, request);
+  async deleteOne (request: SingleRequest, reply: FastifyReply) {
+    await super.deleteOne(request, reply);
   }
 }
