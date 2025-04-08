@@ -25,6 +25,7 @@ Your API documentation will both match the OpenAPI specification's schema and be
    <br/><sub>_src/v1/users.ts_</sub>
    ```TypeScript
    import { type FastifyReply, type FastifyRequest } from 'fastify';
+   import { DELETE, GET, Path, POST, PUT, Schema } from '@sleekify/sleekify';
 
    @Path('/v1/users')
    export class UsersResource {
