@@ -114,7 +114,7 @@ jobs:
       - checkout
       - run:
           name: NVM install
-          command: nvm install
+          command: nvm install $(cat .nvmrc)
       - node/install-packages:
           pkg-manager: npm
       - run:
@@ -136,7 +136,7 @@ jobs:
       - checkout
       - run:
           name: NVM install
-          command: nvm install
+          command: nvm install $(cat .nvmrc)
       - attach_workspace:
           at: .
       - run:
