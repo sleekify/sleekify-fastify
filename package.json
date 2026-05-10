@@ -1,6 +1,6 @@
 {
   "name": "@sleekify/sleekify-fastify",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "description": "A TypeScript decorator driven approach for developing Fastify web applications.",
   "scripts": {
     "build": "tsc",
@@ -51,7 +51,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@sleekify/sleekify": "^1.2.6",
+    "@sleekify/sleekify": "^1.3.1",
     "@types/node": "^20.4.5",
     "fastify": "^5.0.0",
     "fastify-openapi-glue": "^4.7.1",
