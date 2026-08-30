@@ -2,6 +2,10 @@ version: 2.1
 orbs:
   node: circleci/node@5
   win: circleci/windows@5.0
+parameters: 
+  release_branch:
+    type: string
+    default: main
 jobs:
   Check Version:
     executor: node/default
@@ -10,18 +14,19 @@ jobs:
       - run:
           name: Get current version
           command: |
-            MAIN_VERSION=$(curl https://raw.githubusercontent.com/sleekify/$CIRCLE_PROJECT_REPONAME/refs/heads/main/package.json | jq -r '.version')
-            MAIN_MAJOR=$(echo $MAIN_VERSION | sed 's/\([0-9]\+\)[.][0-9]\+[.][0-9]\+/\1/g')
-            MAIN_MINOR=$(echo $MAIN_VERSION | sed 's/[0-9]\+[.]\([0-9]\+\)[.][0-9]\+/\1/g')
-            MAIN_PATCH=$(echo $MAIN_VERSION | sed 's/[0-9]\+[.][0-9]\+[.]\([0-9]\+\)/\1/g')
-            test "$MAIN_VERSION" != ""
-            test "$MAIN_MAJOR" != ""
-            test "$MAIN_MINOR" != ""
-            test "$MAIN_PATCH" != ""
-            echo export MAIN_VERSION=$MAIN_VERSION >> $BASH_ENV
-            echo export MAIN_MAJOR=$MAIN_MAJOR >> $BASH_ENV
-            echo export MAIN_MINOR=$MAIN_MINOR >> $BASH_ENV
-            echo export MAIN_PATCH=$MAIN_PATCH >> $BASH_ENV
+            RELEASE_BRANCH="<< pipeline.parameters.release_branch >>"
+            RELEASE_VERSION=$(curl https://raw.githubusercontent.com/sleekify/$CIRCLE_PROJECT_REPONAME/refs/heads/$RELEASE_BRANCH/package.json | jq -r '.version')
+            RELEASE_MAJOR=$(echo $RELEASE_VERSION | sed 's/\([0-9]\+\)[.][0-9]\+[.][0-9]\+/\1/g')
+            RELEASE_MINOR=$(echo $RELEASE_VERSION | sed 's/[0-9]\+[.]\([0-9]\+\)[.][0-9]\+/\1/g')
+            RELEASE_PATCH=$(echo $RELEASE_VERSION | sed 's/[0-9]\+[.][0-9]\+[.]\([0-9]\+\)/\1/g')
+            test "$RELEASE_VERSION" != ""
+            test "$RELEASE_MAJOR" != ""
+            test "$RELEASE_MINOR" != ""
+            test "$RELEASE_PATCH" != ""
+            echo export RELEASE_VERSION=$RELEASE_VERSION >> $BASH_ENV
+            echo export RELEASE_MAJOR=$RELEASE_MAJOR >> $BASH_ENV
+            echo export RELEASE_MINOR=$RELEASE_MINOR >> $BASH_ENV
+            echo export RELEASE_PATCH=$RELEASE_PATCH >> $BASH_ENV
       - run:
           name: Get package version
           command: |
@@ -49,16 +54,16 @@ jobs:
       - run:
           name: Get expected version
           command: |
-            EXPECTED_MINOR=$(if [[ "$ISSUE_TYPE" == "enhancement" ]]; then echo $((MAIN_MINOR+1)); else echo $MAIN_MINOR; fi)
-            EXPECTED_PATCH=$(if [[ "$ISSUE_TYPE" == "enhancement" ]]; then echo 0; else echo $((MAIN_PATCH+1)); fi)
-            EXPECTED_VERSION=$MAIN_MAJOR.$EXPECTED_MINOR.$EXPECTED_PATCH
+            EXPECTED_MINOR=$(if [[ "$ISSUE_TYPE" == "enhancement" ]]; then echo $((RELEASE_MINOR+1)); else echo $RELEASE_MINOR; fi)
+            EXPECTED_PATCH=$(if [[ "$ISSUE_TYPE" == "enhancement" ]]; then echo 0; else echo $((RELEASE_PATCH+1)); fi)
+            EXPECTED_VERSION=$RELEASE_MAJOR.$EXPECTED_MINOR.$EXPECTED_PATCH
             echo export EXPECTED_VERSION=$EXPECTED_VERSION >> $BASH_ENV
       - run:
           name: Print versions
           command: |
             echo ISSUE_ID: $ISSUE_ID
             echo ISSUE_TYPE: $ISSUE_TYPE
-            echo MAIN_VERSION: $MAIN_VERSION
+            echo RELEASE_VERSION: $RELEASE_VERSION
             echo EXPECTED_VERSION: $EXPECTED_VERSION
             echo PACKAGE_VERSION: $PACKAGE_VERSION
             echo PACKAGE_LOCK_VERSION_1: $PACKAGE_LOCK_VERSION_1
@@ -176,12 +181,12 @@ workflows:
   Check Version:
     when:
       not: 
-        equal: [ << pipeline.git.branch >>, main ]
+        equal: [ << pipeline.git.branch >>, << pipeline.parameters.release_branch >> ]
     jobs:
       - Check Version
   Publish:
     when:
-      equal: [ << pipeline.git.branch >>, main ]
+      equal: [ << pipeline.git.branch >>, << pipeline.parameters.release_branch >> ]
     jobs:
       - Publish:
           context:
@@ -190,7 +195,7 @@ workflows:
   Validate Code (Linux):
     when:
       not: 
-        equal: [ << pipeline.git.branch >>, main ]
+        equal: [ << pipeline.git.branch >>, << pipeline.parameters.release_branch >> ]
     jobs:
       - Build Linux
       - Test Linux:
@@ -199,7 +204,7 @@ workflows:
   Validate Code (Windows):
     when:
       not: 
-        equal: [ << pipeline.git.branch >>, main ]
+        equal: [ << pipeline.git.branch >>, << pipeline.parameters.release_branch >> ]
     jobs:
       - Build Windows
       - Test Windows:
