@@ -167,10 +167,16 @@ jobs:
             PACKAGE_VERSION=$(jq -r '.version' package.json)
             test "$PACKAGE_VERSION" != ""
             echo export PACKAGE_VERSION=$PACKAGE_VERSION >> $BASH_ENV
+      - node/install:
+          node-version: 24.20.0
+      - run:
+          name: Check trusted publishing Node version
+          command: node --version
       - run:
           name: NPM publish
           command: |
-            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            NPM_ID_TOKEN=$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')
+            export NPM_ID_TOKEN
             npm publish --access public
       - run:
           name: Tag release
