@@ -1,4 +1,4 @@
-import { type OpenAPIObject } from '@sleekify/sleekify';
+import type { OpenAPIObject } from '@sleekify/sleekify';
 
 export const specification: OpenAPIObject = {
   openapi: '3.1.1',
@@ -8,6 +8,9 @@ export const specification: OpenAPIObject = {
   },
   components: {
     responses: {
+      201: {
+        description: 'Successful response',
+      },
       400: {
         description: 'Bad request response',
         content: {

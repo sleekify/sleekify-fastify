@@ -1,4 +1,4 @@
-import { Annotation, type OpenAPIObject, Path } from '@sleekify/sleekify';
+import { Annotation, GET, type OpenAPIObject, Path } from '@sleekify/sleekify';
 import _ from 'lodash';
 import { Sleekify } from '../src';
 import Fastify from 'fastify';
@@ -292,7 +292,7 @@ describe('sleekify', () => {
         },
         '/v1/users/{id}/orders': {
           get: {
-            operationId: 'getV1UsersIdOrders',
+            operationId: 'userOrdersGetOperationId',
             responses: {
               200: {
                 description: 'Successful response',
@@ -314,10 +314,10 @@ describe('sleekify', () => {
             responses: {
               201: {
                 description: 'Successful response',
-                content: getSingleContent('#/components/schemas/order')
+                $ref: '#/components/responses/201',
               },
               202: {
-                description: 'Order in progress'
+                description: 'Order in progress',
               },
               ...responses
             }
@@ -378,7 +378,10 @@ describe('sleekify', () => {
                 }
               },
               tags: ['tag2', 'tag1']
-            }
+            },
+            post: {
+              // no tags to sort
+            },
           },
           '/products': {}
         },
@@ -515,6 +518,53 @@ describe('sleekify', () => {
       // Then
       expect(result).toStrictEqual(specification);
     });
+
+    it('When accessing the OpenAPI specification, classes without annotations are ignored', async () => {
+      // Given
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        },
+      };
+      class NakedClass {}
+
+      // When
+      const sleekify = new Sleekify(specification, [NakedClass]);
+      const result = sleekify.getSpecification({ pretty: true });
+
+      // Then
+      expect(result).toStrictEqual(specification);
+    });
+
+    it('When accessing the OpenAPI specification, classes with duplicate paths are ignored', async () => {
+      // Given
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        },
+        paths: {
+          '/users': {}
+        }
+      };
+
+      @Path('/users')
+      class UsersClass {
+        @GET()
+        getMethod() {
+        }
+      }
+
+      // When
+      const sleekify = new Sleekify(specification, [UsersClass]);
+      const result = sleekify.getSpecification({ pretty: true });
+
+      // Then
+      expect(result).toStrictEqual(specification);
+    });
   });
 
   describe('getServiceHandlers', () => {
@@ -537,13 +587,13 @@ describe('sleekify', () => {
         'getV1ProductsId',
         'getV1Users',
         'getV1UsersId',
-        'getV1UsersIdOrders',
         'postV1Products',
         'postV1Users',
         'postV1UsersIdOrders',
         'putV1OrdersId',
         'putV1ProductsId',
-        'putV1UsersId'
+        'putV1UsersId',
+        'userOrdersGetOperationId'
       ]);
       expect(Object.values(result).every((v: any) => typeof (v) === 'function')).toBe(true);
       for (const operationId in result) {

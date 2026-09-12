@@ -1,20 +1,20 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@tsconfig/node18/tsconfig.json",
-  "display": "Node 18",
-
-  "_version": "18.2.0",
+  "extends": "@tsconfig/node24/tsconfig.json",
+  "_version": "24.0.0",
 
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "target": "es2022",
-
+    "lib": ["es2023"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2023",
+    
     "allowJs": true,
     "declaration": true,
+    "emitDecoratorMetadata": false,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
+    "experimentalDecorators": false,
     "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
     "outDir": "dist",
     "skipLibCheck": true,
     "strict": true
