@@ -13,9 +13,12 @@ export class UsersOrdersResource extends AbstractCollectionResource {
   // Test multiple success responses
   @POST({
     responses: {
+      201: {
+        $ref: '#/components/responses/201'
+      },
       202: {
         description: 'Order in progress'
-      }
+      },
     }
   })
   @Schema({
@@ -25,7 +28,10 @@ export class UsersOrdersResource extends AbstractCollectionResource {
     return 'postV1UsersIdOrders';
   }
 
-  @GET()
+  // Test a custom operation ID
+  @GET({
+    operationId: 'userOrdersGetOperationId',
+  })
   @Schema({
     type: ['array'],
     items: {
@@ -33,6 +39,6 @@ export class UsersOrdersResource extends AbstractCollectionResource {
     }
   })
   getMany () {
-    return 'getV1UsersIdOrders';
+    return 'userOrdersGetOperationId';
   }
 }

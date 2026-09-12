@@ -1,6 +1,7 @@
-import { type FastifyReply, type FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
-import { Annotation, Components, type ComponentsObject, Consumes, DELETE, GET, HEAD, type MediaTypeObject, type OpenAPIObject, type OperationObject, OPTIONS, PATCH, Path, type PathItemObject, POST, Produces, PUT, type ReferenceObject, type RequestBodyObject, type ResponseObject, Schema, type ServerObject, type TagObject, TRACE } from '@sleekify/sleekify';
+import type { ComponentsObject, MediaTypeObject, OpenAPIObject, OperationObject, PathItemObject, ReferenceObject, RequestBodyObject, ResponseObject, ServerObject, TagObject } from '@sleekify/sleekify';
+import { Annotation, Components, Consumes, DELETE, GET, HEAD, OPTIONS, PATCH, Path,POST, Produces, PUT, Schema, TRACE } from '@sleekify/sleekify';
 import { dynamicImport } from 'tsimportlib';
 import _ from 'lodash';
 
@@ -258,7 +259,7 @@ export class Sleekify {
         };
       } else {
         const referenceOrResponse: any = operationObject.responses[resolvedStatusCode];
-
+        
         if (referenceOrResponse.$ref === undefined) {
           if (referenceOrResponse.content === undefined) {
             const responseObject = operationObject.responses[resolvedStatusCode] as Exclude<ResponseObject, ReferenceObject>;

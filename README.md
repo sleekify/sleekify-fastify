@@ -9,9 +9,10 @@ Your API documentation will both match the OpenAPI specification's schema and be
 
 ## Versions
 
-| Sleekify | Fastify | Node.js | OpenAPI Specification |
-| -------- | ------- | ------- | --------------------- |
-| 1.0.0+   | 5.0.0+  | 20      | 3.1.1                 |
+| Sleekify | Fastify | Node.js | OpenAPI Specification | TypeScript | TypeScript Config               | Decorator Type |
+| -------- | ------- | ------- | --------------------- | ---------- | ------------------------------- | -------------- |
+| 2.0.0+   | 5.0.0+  | 24      | 3.1.1                 | 5.9+       | "experimentalDecorators": false | new ES/TC39           |
+| 1.0.0+   | 5.0.0+  | 20      | 3.1.1                 | 5.0+       | "experimentalDecorators": true  | old experimental   |
 
 ## Getting Started
 
