@@ -26,7 +26,7 @@
         "typescript": "^5.9.3"
     },
     "dependencies": {
-        "@sleekify/sleekify": "^2.0.0",
+        "@sleekify/sleekify": "^2.0.1",
         "@sleekify/sleekify-fastify": "file:../../",
         "fastify": "^5.0.0",
         "fastify-openapi-glue": "^4.7.1",
