@@ -1,4 +1,4 @@
-import { Annotation, type OpenAPIObject, Path } from '@sleekify/sleekify';
+import { Annotation, Components, GET, type OpenAPIObject, Path, Schema } from '@sleekify/sleekify';
 import _ from 'lodash';
 import { Sleekify } from '../src';
 import Fastify from 'fastify';
@@ -514,6 +514,166 @@ describe('sleekify', () => {
 
       // Then
       expect(result).toStrictEqual(specification);
+    });
+
+    it('When a resource class only has components, then no path is added', async () => {
+      // Given
+      @Components({
+        schemas: {
+          widget: {
+            type: ['object']
+          }
+        }
+      })
+      class WidgetComponents {
+      }
+
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        }
+      };
+
+      // When
+      const sleekify = new Sleekify(specification, [WidgetComponents]);
+      const result = sleekify.getSpecification();
+
+      // Then
+      expect(result.components?.schemas).toStrictEqual({
+        widget: {
+          type: ['object']
+        }
+      });
+      expect(result.paths).toBeUndefined();
+    });
+
+    it('When the base specification already has the path, then the path is not replaced', async () => {
+      // Given
+      @Path('/v1/widgets')
+      class WidgetsResource {
+        @GET()
+        getMany () {
+          return 'getV1Widgets';
+        }
+      }
+
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        },
+        paths: {
+          '/v1/widgets': {
+            summary: 'existing path'
+          }
+        }
+      };
+
+      // When
+      const sleekify = new Sleekify(specification, [WidgetsResource]);
+      const result = sleekify.getSpecification();
+
+      // Then
+      expect(result.paths).toStrictEqual(specification.paths);
+    });
+
+    it('When a success response is a reference, then the reference is not changed', async () => {
+      // Given
+      @Path('/v1/widgets')
+      class WidgetsResource {
+        @GET({
+          responses: {
+            200: {
+              $ref: '#/components/responses/200'
+            }
+          }
+        })
+        @Schema({
+          type: ['object']
+        })
+        getMany () {
+          return 'getV1Widgets';
+        }
+      }
+
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        }
+      };
+
+      // When
+      const sleekify = new Sleekify(specification, [WidgetsResource]);
+      const result = sleekify.getSpecification();
+
+      // Then
+      expect(result.paths?.['/v1/widgets']?.get?.responses).toStrictEqual({
+        200: {
+          $ref: '#/components/responses/200'
+        }
+      });
+    });
+
+    it('When an operation has an operationId, then the operationId is not replaced', async () => {
+      // Given
+      @Path('/v1/widgets')
+      class WidgetsResource {
+        @GET({
+          operationId: 'listWidgets'
+        })
+        getMany () {
+          return 'listWidgets';
+        }
+      }
+
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        }
+      };
+
+      // When
+      const sleekify = new Sleekify(specification, [WidgetsResource]);
+      const result = sleekify.getSpecification();
+
+      // Then
+      expect(result.paths?.['/v1/widgets']?.get?.operationId).toBe('listWidgets');
+      expect(Object.keys(sleekify.getServiceHandlers())).toStrictEqual(['listWidgets']);
+    });
+
+    it('When accessing the OpenAPI specification with the pretty option, then operations without tags are not sorted', async () => {
+      // Given
+      @Path('/v1/widgets')
+      class WidgetsResource {
+        @GET()
+        getMany () {
+          return 'getV1Widgets';
+        }
+      }
+
+      const specification: OpenAPIObject = {
+        openapi: '3.1.1',
+        info: {
+          title: 'my title',
+          version: '1.0.0'
+        }
+      };
+
+      // When
+      const sleekify = new Sleekify(specification, [WidgetsResource]);
+      const result = sleekify.getSpecification({ pretty: true });
+
+      // Then
+      expect(result.paths?.['/v1/widgets']?.get).toStrictEqual({
+        operationId: 'getV1Widgets'
+      });
     });
   });
 
