@@ -4,6 +4,7 @@ module.exports = (async function config() {
     return [
         {
             ignores: [
+                '**/*.d.ts',
                 'build/',
                 'coverage/',
                 'dist/',
@@ -47,7 +48,15 @@ module.exports = (async function config() {
                 complexity: ['error', 10],
                 'max-lines-per-function': ['error', 50],
                 'no-extraneous-class': 'off',
-                'semi': [2, 'always']
+                'semi': [2, 'always'],
+                // Rules introduced between eslint-config-love 83 and 158 which are not yet adopted
+                '@typescript-eslint/no-unsafe-type-assertion': 'off',
+                '@typescript-eslint/prefer-destructuring': 'off',
+                'guard-for-in': 'off',
+                'no-multi-assign': 'off',
+                'no-param-reassign': 'off',
+                radix: 'off',
+                'require-unicode-regexp': 'off',
             },
         },
         {
@@ -63,7 +72,17 @@ module.exports = (async function config() {
                 '@typescript-eslint/no-unsafe-call': 'off',
                 complexity: 'off',
                 'max-lines-per-function': 'off',
-                'no-new': 'off'
+                'no-new': 'off',
+                // Rules introduced between eslint-config-love 83 and 158 which are not yet adopted
+                '@typescript-eslint/require-await': 'off',
+                '@typescript-eslint/strict-void-return': 'off',
+                'arrow-body-style': 'off',
+                'max-lines': 'off',
+                'max-nested-callbacks': 'off',
+                'no-await-in-loop': 'off',
+                'no-console': 'off',
+                'no-promise-executor-return': 'off',
+                'promise/avoid-new': 'off',
             }
         },
     ];
